@@ -9,13 +9,16 @@
 }
 
 .board {
+  display: flex;
+  flex-wrap: wrap;
   width: 640px;
   height: 640px;
+  line-height: 0;
   background-color: #0f0;
 }
 
 .cell {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   width: 80px;
