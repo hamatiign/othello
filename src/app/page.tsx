@@ -31,25 +31,36 @@ export default function Home() {
     console.log(x, y);
     const newBoard = structuredClone(board);
 
-    let can_palce: boolean = false;
     let i: number = 0;
+    let n = 0;
+    function colorcheck(X: number, Y: number, I: number) {
+      if (board[Y + directions[I][1]] !== undefined) {
+        if (board[Y][X + directions[I][0]] !== undefined) {
+          if (board[Y + directions[I][1]][X + directions[I][0]] === 2 / turnColor) {
+            n++;
+            colorcheck(X + directions[I][0], Y + directions[I][1], I);
+          } else if (board[Y + directions[I][1]][X + directions[I][0]] === turnColor) return;
+          else n = 0;
+        } else n = 0;
+      } else n = 0;
+    }
+
     while (i < 8) {
-      if (
-        board[y + directions[i][1]][x + directions[i][0]] !== undefined &&
-        board[y + directions[i][1]][x + directions[i][0]] === 2 / turnColor
-      )
-        can_palce = true;
-      if (
-        board[y + directions[i][1]][x + directions[i][0]] === 2 / turnColor &&
-        board[y + 2 * directions[i][1]][x + 2 * directions[i][0]] === turnColor
-      ) {
-        newBoard[y][x] = turnColor;
-        newBoard[y + directions[i][1]][x + directions[i][0]] = turnColor;
-        setTurnColor(2 / turnColor);
-        setBoard(newBoard);
-      }
+      //if (
+      //board[y + directions[i][1]][x + directions[i][0]] === 2 / turnColor
+      //)
+      //can_palce = true;
+      n = 0;
+      colorcheck(x, y, i);
+
+      for (let j = 1; j <= n; j++)
+        newBoard[y + j * directions[i][1]][x + j * directions[i][0]] = turnColor;
+
       i += 1;
     }
+    newBoard[y][x] = turnColor;
+    setTurnColor(2 / turnColor);
+    setBoard(newBoard);
   };
 
   return (
