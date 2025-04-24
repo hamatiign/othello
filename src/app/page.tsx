@@ -28,22 +28,22 @@ export default function Home() {
   ];
   let i: number = 0;
   let n = 0;
-  function colorcheck(X: number, Y: number, I: number) {
-    if (board[Y + directions[I][1]] !== undefined) {
-      if (board[Y][X + directions[I][0]] !== undefined) {
-        if (board[Y + directions[I][1]][X + directions[I][0]] === 2 / turnColor) {
-          n++;
-          colorcheck(X + directions[I][0], Y + directions[I][1], I);
-        } else if (board[Y + directions[I][1]][X + directions[I][0]] === turnColor) return;
-        else n = 0;
-      } else n = 0;
-    } else n = 0;
-  }
 
   const clickHandler = (x: number, y: number) => {
     console.log(x, y);
     const newBoard = structuredClone(board);
 
+    function colorcheck(X: number, Y: number, I: number) {
+      if (newBoard[Y + directions[I][1]] !== undefined) {
+        if (newBoard[Y][X + directions[I][0]] !== undefined) {
+          if (newBoard[Y + directions[I][1]][X + directions[I][0]] === 2 / turnColor) {
+            n++;
+            colorcheck(X + directions[I][0], Y + directions[I][1], I);
+          } else if (newBoard[Y + directions[I][1]][X + directions[I][0]] === turnColor) return;
+          else n = 0;
+        } else n = 0;
+      } else n = 0;
+    }
     while (i < 8) {
       n = 0;
       colorcheck(x, y, i);
@@ -53,24 +53,31 @@ export default function Home() {
 
       i += 1;
     }
-
-    setTurnColor(2 / turnColor);
-    setBoard(newBoard);
-
+    newBoard[y][x] = turnColor;
+    const turnColorupdate = () => {
+      setTurnColor((turnColor) => 2 / turnColor);
+    };
+    turnColorupdate();
+    console.log(turnColor);
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
         i = 0;
+        let N: boolean = false;
         while (i < 8) {
           n = 0;
           colorcheck(row, col, i);
-          if (n > 0 && board[row][col] === 0) newBoard[row][col] = -1;
-
-          if (n === 0 && board[row][col] === -1) newBoard[row][col] = 0;
+          if (n > 0) N = true;
+          if (n > 0 && newBoard[row][col] === 0) {
+            newBoard[row][col] = -1;
+            break;
+          }
           i++;
         }
+
+        if (N === false && newBoard[row][col] === -1) newBoard[row][col] = 0;
       }
     }
-    for (let i = 0; i < 8; i++) console.log(board[i]);
+    for (let i = 0; i < 8; i++) console.log(newBoard[i]);
     setBoard(newBoard);
   };
 
