@@ -34,53 +34,59 @@ export default function Home() {
     const newBoard = structuredClone(board);
 
     //ある方向に何枚挟めるかを返す
-    function colorcheck(X: number, Y: number, I: number) {
+    function colorcheck(X: number, Y: number, I: number, tc: number) {
       if (newBoard[Y + directions[I][1]] !== undefined) {
         if (newBoard[Y][X + directions[I][0]] !== undefined) {
-          if (newBoard[Y + directions[I][1]][X + directions[I][0]] === 2 / turnColor) {
+          if (newBoard[Y + directions[I][1]][X + directions[I][0]] === 2 / tc) {
             n++;
-            colorcheck(X + directions[I][0], Y + directions[I][1], I);
-          } else if (newBoard[Y + directions[I][1]][X + directions[I][0]] === turnColor) return;
+            colorcheck(X + directions[I][0], Y + directions[I][1], I, tc);
+          } else if (newBoard[Y + directions[I][1]][X + directions[I][0]] === tc) return;
           else n = 0;
         } else n = 0;
       } else n = 0;
     }
 
-    while (i < 8) {
-      n = 0;
-      colorcheck(x, y, i);
+    if (newBoard[y][x] === -1) {
+      //実際挟む
+      while (i < 8) {
+        n = 0;
+        colorcheck(x, y, i, turnColor);
 
-      for (let j = 1; j <= n; j++)
-        newBoard[y + j * directions[i][1]][x + j * directions[i][0]] = turnColor;
+        for (let j = 1; j <= n; j++)
+          newBoard[y + j * directions[i][1]][x + j * directions[i][0]] = turnColor;
 
-      i += 1;
-    }
-    newBoard[y][x] = turnColor;
-    const turnColorupdate = () => {
-      setTurnColor((turnColor) => 2 / turnColor);
-    };
-    console.log(turnColor);
-    for (let row = 0; row < 8; row++) {
-      for (let col = 0; col < 8; col++) {
-        i = 0;
-        let N: boolean = false;
-        while (i < 8) {
-          n = 0;
-          colorcheck(col, row, i);
-          if (n > 0) N = true;
-          if (n > 0 && newBoard[row][col] === 0) {
-            newBoard[row][col] = -1;
-            break;
-          }
-          i++;
-        }
-
-        if (N === false && newBoard[row][col] === -1) newBoard[row][col] = 0;
+        i += 1;
       }
+      newBoard[y][x] = turnColor;
+
+      const turnColorupdate = () => {
+        setTurnColor((prev_turnColor) => 2 / prev_turnColor);
+      };
+
+      turnColorupdate();
+
+      //おける場所の表示
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          i = 0;
+          let N: boolean = false;
+          while (i < 8) {
+            n = 0;
+            colorcheck(col, row, i, 2 / turnColor);
+            if (n > 0) N = true;
+            if (n > 0 && newBoard[row][col] === 0) {
+              newBoard[row][col] = -1;
+              break;
+            }
+            i++;
+          }
+
+          if (N === false && newBoard[row][col] === -1) newBoard[row][col] = 0;
+        }
+      }
+      //for (let i = 0; i < 8; i++) console.log(newBoard[i]);
+      setBoard(newBoard);
     }
-    turnColorupdate();
-    for (let i = 0; i < 8; i++) console.log(newBoard[i]);
-    setBoard(newBoard);
   };
 
   return (
