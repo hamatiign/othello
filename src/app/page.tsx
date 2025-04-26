@@ -15,6 +15,8 @@ export default function Home() {
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
   ]);
+  const [sum_b, setsum_b] = useState(2);
+  const [sum_w, setsum_w] = useState(2);
 
   const directions = [
     [1, 1],
@@ -32,6 +34,10 @@ export default function Home() {
   const clickHandler = (x: number, y: number) => {
     console.log(x, y);
     const newBoard = structuredClone(board);
+    let newSum_b = structuredClone(sum_b);
+    let newSum_w = structuredClone(sum_w);
+    newSum_b = 0;
+    newSum_w = 0;
 
     //ある方向に何枚挟めるかを返す
     function colorcheck(X: number, Y: number, I: number, tc: number) {
@@ -65,11 +71,14 @@ export default function Home() {
 
       turnColorupdate();
 
-      //おける場所の表示
+      //おける場所の表示 + 得点数える
       for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
           i = 0;
           let N: boolean = false;
+          if (newBoard[row][col] === 1) newSum_b++;
+          if (newBoard[row][col] === 2) newSum_w++;
+
           while (i < 8) {
             n = 0;
             colorcheck(col, row, i, 2 / turnColor);
@@ -86,6 +95,8 @@ export default function Home() {
       }
       //for (let i = 0; i < 8; i++) console.log(newBoard[i]);
       setBoard(newBoard);
+      setsum_b(newSum_b);
+      setsum_w(newSum_w);
     }
   };
 
@@ -101,6 +112,11 @@ export default function Home() {
             </div>
           )),
         )}
+      </div>
+      <div className={styles.scores}>
+        <p>黒{sum_b}</p>
+
+        <p>白{sum_w}</p>
       </div>
     </div>
   );
