@@ -33,6 +33,7 @@ export default function Home() {
     console.log(x, y);
     const newBoard = structuredClone(board);
 
+    //ある方向に何枚挟めるかを返す
     function colorcheck(X: number, Y: number, I: number) {
       if (newBoard[Y + directions[I][1]] !== undefined) {
         if (newBoard[Y][X + directions[I][0]] !== undefined) {
@@ -44,6 +45,7 @@ export default function Home() {
         } else n = 0;
       } else n = 0;
     }
+
     while (i < 8) {
       n = 0;
       colorcheck(x, y, i);
@@ -57,7 +59,6 @@ export default function Home() {
     const turnColorupdate = () => {
       setTurnColor((turnColor) => 2 / turnColor);
     };
-    turnColorupdate();
     console.log(turnColor);
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
@@ -65,7 +66,7 @@ export default function Home() {
         let N: boolean = false;
         while (i < 8) {
           n = 0;
-          colorcheck(row, col, i);
+          colorcheck(col, row, i);
           if (n > 0) N = true;
           if (n > 0 && newBoard[row][col] === 0) {
             newBoard[row][col] = -1;
@@ -77,6 +78,7 @@ export default function Home() {
         if (N === false && newBoard[row][col] === -1) newBoard[row][col] = 0;
       }
     }
+    turnColorupdate();
     for (let i = 0; i < 8; i++) console.log(newBoard[i]);
     setBoard(newBoard);
   };
