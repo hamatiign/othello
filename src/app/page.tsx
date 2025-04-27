@@ -17,7 +17,7 @@ export default function Home() {
   ]);
   const [sum_b, setsum_b] = useState(2);
   const [sum_w, setsum_w] = useState(2);
-
+  const [pass, setpass] = useState(true);
   const directions = [
     [1, 1],
     [1, 0],
@@ -36,8 +36,10 @@ export default function Home() {
     const newBoard = structuredClone(board);
     let newSum_b = structuredClone(sum_b);
     let newSum_w = structuredClone(sum_w);
+    let newpass = structuredClone(pass);
     newSum_b = 0;
     newSum_w = 0;
+    newpass = true;
 
     //ある方向に何枚挟めるかを返す
     function colorcheck(X: number, Y: number, I: number, tc: number) {
@@ -65,11 +67,7 @@ export default function Home() {
       }
       newBoard[y][x] = turnColor;
 
-      const turnColorupdate = () => {
-        setTurnColor((prev_turnColor) => 2 / prev_turnColor);
-      };
-
-      turnColorupdate();
+      setTurnColor(2 / turnColor);
 
       //おける場所の表示 + 得点数える
       for (let row = 0; row < 8; row++) {
@@ -91,12 +89,50 @@ export default function Home() {
           }
 
           if (N === false && newBoard[row][col] === -1) newBoard[row][col] = 0;
+          if (newBoard[row][col] === -1) newpass = false;
         }
       }
+      //パス
+      if (newpass) {
+        setTurnColor(turnColor);
+        for (let row = 0; row < 8; row++) {
+          for (let col = 0; col < 8; col++) {
+            i = 0;
+            let N: boolean = false;
+
+            while (i < 8) {
+              n = 0;
+              colorcheck(col, row, i, turnColor);
+              if (n > 0) N = true;
+              if (n > 0 && newBoard[row][col] === 0) {
+                newBoard[row][col] = -1;
+                break;
+              }
+              i++;
+            }
+
+            if (N === false && newBoard[row][col] === -1) newBoard[row][col] = 0;
+            if (newBoard[row][col] === -1) newpass = false;
+          }
+        }
+
+        if (newpass) {
+          //パスパス
+          alert('両者おける場所がなくなったため決着です');
+        } else {
+          //片方パス
+          if (turnColor === 1) alert('白のおける場所がないためもう一度黒の番です。');
+          else {
+            alert('黒のおける場所がないためもう一度白の番です。');
+          }
+        }
+      }
+
       //for (let i = 0; i < 8; i++) console.log(newBoard[i]);
       setBoard(newBoard);
       setsum_b(newSum_b);
       setsum_w(newSum_w);
+      setpass(newpass);
     }
   };
 
