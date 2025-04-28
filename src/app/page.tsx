@@ -17,7 +17,7 @@ export default function Home() {
   ]);
   const [sum_b, setsum_b] = useState(2);
   const [sum_w, setsum_w] = useState(2);
-  const [pass, setpass] = useState(true);
+  const [pass, setpass] = useState(false);
   const directions = [
     [1, 1],
     [1, 0],
@@ -92,7 +92,7 @@ export default function Home() {
           if (newBoard[row][col] === -1) newpass = false;
         }
       }
-      //パス
+      //パスパスの判定
       if (newpass) {
         setTurnColor(turnColor);
         for (let row = 0; row < 8; row++) {
@@ -117,10 +117,21 @@ export default function Home() {
         }
 
         if (newpass) {
-          //パスパス
-          alert('両者おける場所がなくなったため決着です');
+          //パスパス強制終了
+          if (newSum_b > newSum_w)
+            alert(
+              `両者おける場所がなくなったため決着です.${newSum_b}対${newSum_w}で黒の勝利です。`,
+            );
+          else if (newSum_b === newSum_w)
+            alert(
+              `両者おける場所がなくなったため決着です.${newSum_b}対${newSum_w}で引き分けです。`,
+            );
+          else
+            alert(
+              `両者おける場所がなくなったため決着です.${newSum_b}対${newSum_w}で白の勝利です。`,
+            );
         } else {
-          //片方パス
+          //片方パスの表示
           if (turnColor === 1) alert('白のおける場所がないためもう一度黒の番です。');
           else {
             alert('黒のおける場所がないためもう一度白の番です。');
@@ -149,11 +160,34 @@ export default function Home() {
           )),
         )}
       </div>
-      <div className={styles.scores}>
-        <p>黒{sum_b}</p>
+      {pass === true && sum_b > sum_w && (
+        <div className={styles.resurt}>
+          <p>
+            {sum_b}対{sum_w}で黒の勝利です
+          </p>
+        </div>
+      )}
+      {pass === true && sum_b === sum_w && (
+        <div className={styles.resurt}>
+          <p>
+            {sum_b}対{sum_w}で引き分けです
+          </p>
+        </div>
+      )}
+      {pass === true && sum_b < sum_w && (
+        <div className={styles.resurt}>
+          <p>
+            {sum_b}対{sum_w}で白の勝利です
+          </p>
+        </div>
+      )}
+      {pass !== true && (
+        <div className={styles.scores}>
+          <p>黒{sum_b}</p>
 
-        <p>白{sum_w}</p>
-      </div>
+          <p>白{sum_w}</p>
+        </div>
+      )}
     </div>
   );
 }
