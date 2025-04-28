@@ -18,6 +18,7 @@ export default function Home() {
   const [sum_b, setsum_b] = useState(2);
   const [sum_w, setsum_w] = useState(2);
   const [pass, setpass] = useState(false);
+  const [passpass, setpasspass] = useState(false);
   const directions = [
     [1, 1],
     [1, 0],
@@ -37,10 +38,11 @@ export default function Home() {
     let newSum_b = structuredClone(sum_b);
     let newSum_w = structuredClone(sum_w);
     let newpass = structuredClone(pass);
+    let newpasspass = structuredClone(passpass);
     newSum_b = 0;
     newSum_w = 0;
     newpass = true;
-
+    newpasspass = true;
     //ある方向に何枚挟めるかを返す
     function colorcheck(X: number, Y: number, I: number, tc: number) {
       if (newBoard[Y + directions[I][1]] !== undefined) {
@@ -112,30 +114,19 @@ export default function Home() {
             }
 
             if (N === false && newBoard[row][col] === -1) newBoard[row][col] = 0;
-            if (newBoard[row][col] === -1) newpass = false;
+            if (newBoard[row][col] === -1) newpasspass = false;
           }
         }
+      } else newpasspass = false;
 
-        if (newpass) {
-          //パスパス強制終了
-          if (newSum_b > newSum_w)
-            alert(
-              `両者おける場所がなくなったため決着です.${newSum_b}対${newSum_w}で黒の勝利です。`,
-            );
-          else if (newSum_b === newSum_w)
-            alert(
-              `両者おける場所がなくなったため決着です.${newSum_b}対${newSum_w}で引き分けです。`,
-            );
-          else
-            alert(
-              `両者おける場所がなくなったため決着です.${newSum_b}対${newSum_w}で白の勝利です。`,
-            );
-        } else {
-          //片方パスの表示
-          if (turnColor === 1) alert('白のおける場所がないためもう一度黒の番です。');
-          else {
-            alert('黒のおける場所がないためもう一度白の番です。');
-          }
+      if (newpasspass) {
+        //パスパス強制終了
+        alert(`両者おける場所がなくなったため決着です.`);
+      } else if (newpass) {
+        //片方パスの表示
+        if (turnColor === 1) alert('白のおける場所がないためもう一度黒の番です。');
+        else {
+          alert('黒のおける場所がないためもう一度白の番です。');
         }
       }
 
@@ -144,6 +135,7 @@ export default function Home() {
       setsum_b(newSum_b);
       setsum_w(newSum_w);
       setpass(newpass);
+      setpasspass(newpasspass);
     }
   };
 
@@ -160,28 +152,28 @@ export default function Home() {
           )),
         )}
       </div>
-      {pass === true && sum_b > sum_w && (
+      {passpass === true && sum_b > sum_w && (
         <div className={styles.resurt}>
           <p>
             {sum_b}対{sum_w}で黒の勝利です
           </p>
         </div>
       )}
-      {pass === true && sum_b === sum_w && (
+      {passpass === true && sum_b === sum_w && (
         <div className={styles.resurt}>
           <p>
             {sum_b}対{sum_w}で引き分けです
           </p>
         </div>
       )}
-      {pass === true && sum_b < sum_w && (
+      {passpass === true && sum_b < sum_w && (
         <div className={styles.resurt}>
           <p>
             {sum_b}対{sum_w}で白の勝利です
           </p>
         </div>
       )}
-      {pass !== true && (
+      {passpass !== true && (
         <div className={styles.scores}>
           <p>黒{sum_b}</p>
 
