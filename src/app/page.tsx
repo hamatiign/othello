@@ -43,6 +43,18 @@ export default function Home() {
     newSum_w = 0;
     newpass = true;
     newpasspass = true;
+    //各方向何枚返せるか
+    function colorcheckvec(X: number, Y: number, tc: number): number[] {
+      let i = 0;
+      const array: number[] = [];
+      while (i < 8) {
+        n = 0;
+        colorcheck(X, Y, i, tc);
+        array.push(n);
+        i++;
+      }
+      return array;
+    }
     //ある方向に何枚挟めるかを返す
     function colorcheck(X: number, Y: number, I: number, tc: number) {
       if (newBoard[Y + directions[I][1]] !== undefined) {
@@ -50,23 +62,18 @@ export default function Home() {
           if (newBoard[Y + directions[I][1]][X + directions[I][0]] === 2 / tc) {
             n++;
             colorcheck(X + directions[I][0], Y + directions[I][1], I, tc);
-          } else if (newBoard[Y + directions[I][1]][X + directions[I][0]] === tc) return;
-          else n = 0;
-        } else n = 0;
-      } else n = 0;
+          } else if (newBoard[Y + directions[I][1]][X + directions[I][0]] === tc) return n;
+          else return (n = 0);
+        } else return (n = 0);
+      } else return (n = 0);
     }
 
     if (newBoard[y][x] === -1) {
       //実際挟む
-      while (i < 8) {
-        n = 0;
-        colorcheck(x, y, i, turnColor);
-
-        for (let j = 1; j <= n; j++)
+      for (let i = 0; i < 8; i++)
+        for (let j = 1; j <= colorcheckvec(x, y, turnColor)[i]; j++)
           newBoard[y + j * directions[i][1]][x + j * directions[i][0]] = turnColor;
 
-        i += 1;
-      }
       newBoard[y][x] = turnColor;
 
       setTurnColor(2 / turnColor);
@@ -74,49 +81,35 @@ export default function Home() {
       //おける場所の表示 + 得点数える
       for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
-          i = 0;
-          let N: boolean = false;
           if (newBoard[row][col] === 1) newSum_b++;
           if (newBoard[row][col] === 2) newSum_w++;
+          if (colorcheckvec(col, row, 2 / turnColor).some((i) => i > 0) && newBoard[row][col] === 0)
+            newBoard[row][col] = -1;
 
-          while (i < 8) {
-            n = 0;
-            colorcheck(col, row, i, 2 / turnColor);
-            if (n > 0) N = true;
-            if (n > 0 && newBoard[row][col] === 0) {
-              newBoard[row][col] = -1;
-              break;
-            }
-            i++;
-          }
-
-          if (N === false && newBoard[row][col] === -1) newBoard[row][col] = 0;
-          if (newBoard[row][col] === -1) newpass = false;
+          if (
+            !colorcheckvec(col, row, 2 / turnColor).some((i) => i > 0) &&
+            newBoard[row][col] === -1
+          )
+            newBoard[row][col] = 0;
         }
       }
+      //パス判定
+      newpass = !newBoard.some((i) => i.some((j) => j === -1));
       //パスパスの判定
       if (newpass) {
         setTurnColor(turnColor);
         for (let row = 0; row < 8; row++) {
           for (let col = 0; col < 8; col++) {
-            i = 0;
-            let N: boolean = false;
+            if (newBoard[row][col] === 1) newSum_b++;
+            if (newBoard[row][col] === 2) newSum_w++;
+            if (colorcheckvec(col, row, turnColor).some((i) => i > 0) && newBoard[row][col] === 0)
+              newBoard[row][col] = -1;
 
-            while (i < 8) {
-              n = 0;
-              colorcheck(col, row, i, turnColor);
-              if (n > 0) N = true;
-              if (n > 0 && newBoard[row][col] === 0) {
-                newBoard[row][col] = -1;
-                break;
-              }
-              i++;
-            }
-
-            if (N === false && newBoard[row][col] === -1) newBoard[row][col] = 0;
-            if (newBoard[row][col] === -1) newpasspass = false;
+            if (!colorcheckvec(col, row, turnColor).some((i) => i > 0) && newBoard[row][col] === -1)
+              newBoard[row][col] = 0;
           }
         }
+        newpasspass = !newBoard.some((i) => i.some((j) => j === -1));
       } else newpasspass = false;
 
       if (newpasspass) {
