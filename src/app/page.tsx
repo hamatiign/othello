@@ -29,7 +29,6 @@ export default function Home() {
     [-1, 0],
     [-1, -1],
   ];
-  let i: number = 0;
   let n = 0;
 
   const clickHandler = (x: number, y: number) => {
@@ -43,7 +42,7 @@ export default function Home() {
     newSum_w = 0;
     newpass = true;
     newpasspass = true;
-    //各方向何枚返せるか
+    //各方向何枚返せるかの配列を返す
     function colorcheckvec(X: number, Y: number, tc: number): number[] {
       let i = 0;
       const array: number[] = [];
