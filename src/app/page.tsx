@@ -15,10 +15,7 @@ export default function Home() {
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
   ]);
-  const [sum_b, setsum_b] = useState(2);
-  const [sum_w, setsum_w] = useState(2);
-  const [pass, setpass] = useState(false);
-  const [passpass, setpasspass] = useState(false);
+
   const directions = [
     [1, 1],
     [1, 0],
@@ -30,15 +27,16 @@ export default function Home() {
     [-1, -1],
   ];
   let n = 0;
+  let sum_b = 2;
+  let sum_w = 2;
+  const [pass, setpass] = useState(false);
+  const [passpass, setpasspass] = useState(false);
+  const newBoard = structuredClone(board);
 
   const clickHandler = (x: number, y: number) => {
     console.log(x, y);
-    const newBoard = structuredClone(board);
     let newpass = structuredClone(pass);
     let newpasspass = structuredClone(passpass);
-
-    newpass = true;
-    newpasspass = true;
     //各方向何枚返せるかの配列返す
     function colorcheckvec(X: number, Y: number, tc: number): number[] {
       let i = 0;
@@ -123,21 +121,18 @@ export default function Home() {
       setTurnColor(2 / turnColor);
       if (newpass === true && newpasspass === false) setTurnColor(turnColor);
 
-      setsum_b(
-        newBoard.reduce((acc, row) => {
-          return acc + row.reduce((rowAcc, num) => (num === 1 ? rowAcc + 1 : rowAcc), 0);
-        }, 0),
-      );
-      setsum_w(
-        newBoard.reduce((acc, row) => {
-          return acc + row.reduce((rowAcc, num) => (num === 2 ? rowAcc + 1 : rowAcc), 0);
-        }, 0),
-      );
       setBoard(newBoard);
       setpass(newpass);
       setpasspass(newpasspass);
     }
   };
+  sum_b = newBoard.reduce((acc, row) => {
+    return acc + row.reduce((rowAcc, num) => (num === 1 ? rowAcc + 1 : rowAcc), 0);
+  }, 0);
+
+  sum_w = newBoard.reduce((acc, row) => {
+    return acc + row.reduce((rowAcc, num) => (num === 2 ? rowAcc + 1 : rowAcc), 0);
+  }, 0);
 
   return (
     <div className={styles.container}>
