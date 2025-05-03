@@ -34,12 +34,9 @@ export default function Home() {
   const clickHandler = (x: number, y: number) => {
     console.log(x, y);
     const newBoard = structuredClone(board);
-    let newSum_b = structuredClone(sum_b);
-    let newSum_w = structuredClone(sum_w);
     let newpass = structuredClone(pass);
     let newpasspass = structuredClone(passpass);
-    newSum_b = 0;
-    newSum_w = 0;
+
     newpass = true;
     newpasspass = true;
     //各方向何枚返せるかの配列返す
@@ -48,40 +45,43 @@ export default function Home() {
       const array: number[] = [];
       while (i < 8) {
         n = 0;
-        colorcheck(X, Y, i, tc);
-        array.push(n);
+        array.push(colorcheck(X, Y, i, tc));
         i++;
       }
       return array;
     }
     //ある方向に何枚挟めるかを返す
-    function colorcheck(X: number, Y: number, I: number, tc: number) {
+    function colorcheck(X: number, Y: number, I: number, tc: number): number {
       if (newBoard[Y + directions[I][1]] !== undefined) {
         if (newBoard[Y][X + directions[I][0]] !== undefined) {
           if (newBoard[Y + directions[I][1]][X + directions[I][0]] === 2 / tc) {
             n++;
-            colorcheck(X + directions[I][0], Y + directions[I][1], I, tc);
+            return colorcheck(X + directions[I][0], Y + directions[I][1], I, tc);
           } else if (newBoard[Y + directions[I][1]][X + directions[I][0]] === tc) return n;
-          else return (n = 0);
-        } else return (n = 0);
-      } else return (n = 0);
+          else return 0;
+        } else return 0;
+      } else return 0;
     }
 
+    //実際挟む
     if (newBoard[y][x] === -1) {
-      //実際挟む
-      for (let i = 0; i < 8; i++)
-        for (let j = 1; j <= colorcheckvec(x, y, turnColor)[i]; j++)
-          newBoard[y + j * directions[i][1]][x + j * directions[i][0]] = turnColor;
+      const cvector = colorcheckvec(x, y, turnColor);
+      for (let i = 0; i < 8; i++) {
+        console.log(`方向 ${i}: colorcheckvec =`, cvector[i]);
+        for (let j = 0; j < cvector[i]; j++) {
+          const newY = y + (j + 1) * directions[i][1];
+          const newX = x + (j + 1) * directions[i][0];
+          newBoard[newY][newX] = turnColor;
+          console.log(`更新対象の座標: (${newX}, ${newY})`);
+        }
+      }
 
+      //for (let A = 0; A < 5; A++) console.log(A);
       newBoard[y][x] = turnColor;
-
-      setTurnColor(2 / turnColor);
 
       //おける場所の表示 + 得点数える
       for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
-          if (newBoard[row][col] === 1) newSum_b++;
-          if (newBoard[row][col] === 2) newSum_w++;
           if (colorcheckvec(col, row, 2 / turnColor).some((i) => i > 0) && newBoard[row][col] === 0)
             newBoard[row][col] = -1;
 
@@ -96,11 +96,8 @@ export default function Home() {
       newpass = !newBoard.some((i) => i.some((j) => j === -1));
       //パスパスの判定
       if (newpass) {
-        setTurnColor(turnColor);
         for (let row = 0; row < 8; row++) {
           for (let col = 0; col < 8; col++) {
-            if (newBoard[row][col] === 1) newSum_b++;
-            if (newBoard[row][col] === 2) newSum_w++;
             if (colorcheckvec(col, row, turnColor).some((i) => i > 0) && newBoard[row][col] === 0)
               newBoard[row][col] = -1;
 
@@ -123,9 +120,20 @@ export default function Home() {
       }
 
       //for (let i = 0; i < 8; i++) console.log(newBoard[i]);
+      setTurnColor(2 / turnColor);
+      if (newpass === true && newpasspass === false) setTurnColor(turnColor);
+
+      setsum_b(
+        newBoard.reduce((acc, row) => {
+          return acc + row.reduce((rowAcc, num) => (num === 1 ? rowAcc + 1 : rowAcc), 0);
+        }, 0),
+      );
+      setsum_w(
+        newBoard.reduce((acc, row) => {
+          return acc + row.reduce((rowAcc, num) => (num === 2 ? rowAcc + 1 : rowAcc), 0);
+        }, 0),
+      );
       setBoard(newBoard);
-      setsum_b(newSum_b);
-      setsum_w(newSum_w);
       setpass(newpass);
       setpasspass(newpasspass);
     }
