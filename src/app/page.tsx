@@ -87,7 +87,6 @@ export default function Home() {
         }
       }
 
-      //for (let A = 0; A < 5; A++) console.log(A);
       newBoard[y][x] = turnColor;
 
       //おける場所の表示 + 得点数える
