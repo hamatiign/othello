@@ -39,6 +39,19 @@ function colorcheck(
     } else return 0;
   } else return 0;
 }
+//点数数える
+function calcScore_b(newBoard: number[][]) {
+  const result = newBoard.reduce((acc, row) => {
+    return acc + row.reduce((rowAcc, num) => (num === 1 ? rowAcc + 1 : rowAcc), 0);
+  }, 0);
+  return result;
+}
+function calcScore_w(newBoard: number[][]) {
+  const result = newBoard.reduce((acc, row) => {
+    return acc + row.reduce((rowAcc, num) => (num === 2 ? rowAcc + 1 : rowAcc), 0);
+  }, 0);
+  return result;
+}
 export default function Home() {
   const [turnColor, setTurnColor] = useState(1);
   const [board, setBoard] = useState([
@@ -63,8 +76,6 @@ export default function Home() {
     [-1, -1],
   ];
 
-  let sum_b = 2;
-  let sum_w = 2;
   let pass: boolean = false;
   const [passpass, setpasspass] = useState(false);
   const newBoard = structuredClone(board);
@@ -146,13 +157,8 @@ export default function Home() {
       setpasspass(newpasspass);
     }
   };
-  sum_b = newBoard.reduce((acc, row) => {
-    return acc + row.reduce((rowAcc, num) => (num === 1 ? rowAcc + 1 : rowAcc), 0);
-  }, 0);
-
-  sum_w = newBoard.reduce((acc, row) => {
-    return acc + row.reduce((rowAcc, num) => (num === 2 ? rowAcc + 1 : rowAcc), 0);
-  }, 0);
+  const sum_b = calcScore_b(newBoard);
+  const sum_w = calcScore_w(newBoard);
 
   return (
     <div className={styles.container}>
@@ -168,21 +174,21 @@ export default function Home() {
         )}
       </div>
       {passpass === true && sum_b > sum_w && (
-        <div className={styles.resurt}>
+        <div className={styles.result}>
           <p>
             {sum_b}対{sum_w}で黒の勝利です
           </p>
         </div>
       )}
       {passpass === true && sum_b === sum_w && (
-        <div className={styles.resurt}>
+        <div className={styles.result}>
           <p>
             {sum_b}対{sum_w}で引き分けです
           </p>
         </div>
       )}
       {passpass === true && sum_b < sum_w && (
-        <div className={styles.resurt}>
+        <div className={styles.result}>
           <p>
             {sum_b}対{sum_w}で白の勝利です
           </p>
