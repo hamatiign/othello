@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import styles from './page.module.css';
-let n: number;
 
 //各方向何枚返せるかの配列返す
 function colorcheckvec(
@@ -15,13 +14,12 @@ function colorcheckvec(
   let i = 0;
   const array: number[] = [];
   while (i < 8) {
-    n = 0;
     array.push(colorcheck(X, Y, i, tc, newBoard, directions));
     i++;
   }
   return array;
 }
-//ある方向に何枚挟めるかを返す
+//ある方向に何枚挟めるかを返す TODO -1000減らす
 function colorcheck(
   X: number,
   Y: number,
@@ -30,13 +28,13 @@ function colorcheck(
   newBoard: number[][],
   directions: number[][],
 ): number {
-  if (newBoard[Y + directions[I][1]] === undefined) return 0;
-  if (newBoard[Y + directions[I][1]][X + directions[I][0]] === undefined) return 0;
+  //  ＞０で挟める、ー１０００はそのため
+  if (newBoard[Y + directions[I][1]] === undefined) return -1000;
+  if (newBoard[Y + directions[I][1]][X + directions[I][0]] === undefined) return -1000;
   if (newBoard[Y + directions[I][1]][X + directions[I][0]] === 2 / tc) {
-    n++;
-    return colorcheck(X + directions[I][0], Y + directions[I][1], I, tc, newBoard, directions);
-  } else if (newBoard[Y + directions[I][1]][X + directions[I][0]] === tc) return n;
-  else return 0;
+    return 1 + colorcheck(X + directions[I][0], Y + directions[I][1], I, tc, newBoard, directions);
+  } else if (newBoard[Y + directions[I][1]][X + directions[I][0]] === tc) return 0;
+  else return -1000;
 }
 //点数数える
 function calcScore_b(newBoard: number[][]) {
@@ -54,12 +52,17 @@ function calcScore_w(newBoard: number[][]) {
 }
 //おけるマスがあるか
 function canput(newBoard: number[][], turnColor: number, directions: number[][]): boolean {
+  let result = false;
   for (let i = 0; i < newBoard.length; i++) {
     for (let j = 0; j < newBoard.length; j++) {
-      if (colorcheckvec(i, j, turnColor, newBoard, directions).some((k) => k > 0)) return true;
+      if (
+        colorcheckvec(i, j, turnColor, newBoard, directions).some((k) => k > 0) &&
+        newBoard[i][j] === 0
+      )
+        result = true;
     }
   }
-  return false;
+  return result;
 }
 //～～～～～home～～～～～～～～～～～～
 export default function Home() {
@@ -95,7 +98,11 @@ export default function Home() {
     console.log(x, y);
 
     //実際挟む
-    if (colorcheckvec(x, y, turnColor, newBoard, directions).some((i) => i > 0)) {
+    if (
+      //挟める かつ 空いてる
+      colorcheckvec(x, y, turnColor, newBoard, directions).some((i) => i > 0) &&
+      newBoard[y][x] === 0
+    ) {
       const cvector = colorcheckvec(x, y, turnColor, newBoard, directions);
       for (let i = 0; i < 8; i++) {
         for (let j = 0; j < cvector[i]; j++) {
@@ -151,7 +158,7 @@ export default function Home() {
               {color === 2 && <div className={styles.stonew} />}
 
               {color === 0 &&
-                colorcheckvec(x, y, turnColor, board, directions).some((k) => k > 0) && (
+                colorcheckvec(x, y, turnColor, newBoard, directions).some((k) => k > 0) && (
                   <div className={styles.bluestone} />
                 )}
             </div>
