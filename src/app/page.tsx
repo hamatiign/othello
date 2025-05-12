@@ -90,8 +90,6 @@ export default function Home() {
   ];
 
   const newBoard = structuredClone(board);
-  const pass = false;
-  let passpass = false;
   //~~~~~~~~~クリックハンドラ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const clickHandler = (x: number, y: number) => {
     console.log(x, y);
@@ -115,7 +113,7 @@ export default function Home() {
       // 色はあってるポイ
       //パス判定
       const pass = !canput(newBoard, 2 / turnColor, directions);
-      console.log('canp 2/tc', canput(newBoard, 2 / turnColor, directions));
+      /*console.log('canp 2/tc', canput(newBoard, 2 / turnColor, directions));
 
       console.log('newboard', newBoard);
       for (let i = 0; i < newBoard.length; i++) {
@@ -126,35 +124,34 @@ export default function Home() {
       }
       console.log('2/tc', 2 / turnColor);
       console.log(canput(newBoard, turnColor, directions));
-      console.log('pass', pass);
+      console.log('pass', pass);*/
 
-      //パスパスの判定
-      if (pass) {
-        passpass = !canput(newBoard, turnColor, directions);
-        console.log('tc', turnColor);
-        console.log(canput(newBoard, turnColor, directions));
-      } else passpass = false;
-      console.log('passpass', passpass);
+      //パス後のturncolor側のパスの判定
+      const canpassAfterpass = !canput(newBoard, turnColor, directions);
+
+      /*console.log('tc', turnColor);
+        console.log(canput(newBoard, turnColor, directions));*/
+      //console.log('passpass', passpass);
+
+      if (canpassAfterpass && pass) {
+        //パスパス強制終了
+        alert(`両者おける場所がなくなったため決着です.`);
+      } else if (pass) {
+        //片方パスの表示
+        if (turnColor === 1) alert('白のおける場所がないためもう一度黒の番です。');
+        else {
+          alert('黒のおける場所がないためもう一度白の番です。');
+        }
+      }
 
       setTurnColor(2 / turnColor);
-      if (pass === true && passpass === false) setTurnColor(turnColor);
+      if (pass === true && canpassAfterpass === false) setTurnColor(turnColor);
 
       setBoard(newBoard);
     }
   }; //~~~~~~~~~~~~~~~~ハンドラ終わり~~~~~~~~~~~~~~~~~~~~~~
   const sum_b = calcScore_b(newBoard);
   const sum_w = calcScore_w(newBoard);
-
-  if (passpass) {
-    //パスパス強制終了
-    alert(`両者おける場所がなくなったため決着です.`);
-  } else if (pass) {
-    //片方パスの表示
-    if (turnColor === 1) alert('白のおける場所がないためもう一度黒の番です。');
-    else {
-      alert('黒のおける場所がないためもう一度白の番です。');
-    }
-  }
 
   //~~~~~~~~~return~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   return (
