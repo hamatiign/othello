@@ -50,13 +50,13 @@ function calcScore_w(newBoard: number[][]) {
   }, 0);
   return result;
 }
-//おけるマスがあるか
+//その色をおけるマスがあるか
 function canput(newBoard: number[][], turnColor: number, directions: number[][]): boolean {
   let result = false;
   for (let i = 0; i < newBoard.length; i++) {
     for (let j = 0; j < newBoard.length; j++) {
       if (
-        colorcheckvec(i, j, turnColor, newBoard, directions).some((k) => k > 0) &&
+        colorcheckvec(j, i, turnColor, newBoard, directions).some((k) => k > 0) &&
         newBoard[i][j] === 0
       )
         result = true;
@@ -90,8 +90,7 @@ export default function Home() {
   ];
 
   const newBoard = structuredClone(board);
-  let newturnColor = structuredClone(turnColor);
-
+  const pass = false;
   let passpass = false;
   //~~~~~~~~~クリックハンドラ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const clickHandler = (x: number, y: number) => {
@@ -103,7 +102,7 @@ export default function Home() {
       colorcheckvec(x, y, turnColor, newBoard, directions).some((i) => i > 0) &&
       newBoard[y][x] === 0
     ) {
-      const cvector = colorcheckvec(x, y, turnColor, newBoard, directions);
+      const cvector = colorcheckvec(x, y, turnColor, newBoard, directions); //関数が再読み込みされて結果が変わるのを防ぐ
       for (let i = 0; i < 8; i++) {
         for (let j = 0; j < cvector[i]; j++) {
           const newY = y + (j + 1) * directions[i][1];
@@ -113,6 +112,29 @@ export default function Home() {
       }
 
       newBoard[y][x] = turnColor;
+      // 色はあってるポイ
+      //パス判定
+      const pass = !canput(newBoard, 2 / turnColor, directions);
+      console.log('canp 2/tc', canput(newBoard, 2 / turnColor, directions));
+
+      console.log('newboard', newBoard);
+      for (let i = 0; i < newBoard.length; i++) {
+        for (let j = 0; j < newBoard.length; j++) {
+          console.log(i, j, 'tcvec', colorcheckvec(j, i, 2 / turnColor, newBoard, directions));
+          console.log(newBoard[i][j]);
+        }
+      }
+      console.log('2/tc', 2 / turnColor);
+      console.log(canput(newBoard, turnColor, directions));
+      console.log('pass', pass);
+
+      //パスパスの判定
+      if (pass) {
+        passpass = !canput(newBoard, turnColor, directions);
+        console.log('tc', turnColor);
+        console.log(canput(newBoard, turnColor, directions));
+      } else passpass = false;
+      console.log('passpass', passpass);
 
       setTurnColor(2 / turnColor);
       if (pass === true && passpass === false) setTurnColor(turnColor);
@@ -123,30 +145,17 @@ export default function Home() {
   const sum_b = calcScore_b(newBoard);
   const sum_w = calcScore_w(newBoard);
 
-  //パス判定
-  const pass = !canput(newBoard, 2 / newturnColor, directions);
-  console.log(canput(newBoard, newturnColor, directions));
-  console.log('pass', pass);
-
-  //パスパスの判定
-  if (pass) {
-    passpass = !canput(newBoard, newturnColor, directions);
-    console.log(canput(newBoard, newturnColor, directions));
-  } else passpass = false;
-  console.log('passpass', passpass);
-
   if (passpass) {
     //パスパス強制終了
     alert(`両者おける場所がなくなったため決着です.`);
   } else if (pass) {
     //片方パスの表示
-    if (newturnColor === 1) alert('白のおける場所がないためもう一度黒の番です。');
+    if (turnColor === 1) alert('白のおける場所がないためもう一度黒の番です。');
     else {
       alert('黒のおける場所がないためもう一度白の番です。');
     }
   }
-  newturnColor = 2 / newturnColor;
-  if (pass === true && passpass === false) newturnColor = 2 / newturnColor;
+
   //~~~~~~~~~return~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   return (
     <div className={styles.container}>
@@ -165,28 +174,35 @@ export default function Home() {
           )),
         )}
       </div>
-      {passpass === true && sum_b > sum_w && (
-        <div className={styles.result}>
-          <p>
-            {sum_b}対{sum_w}で黒の勝利です
-          </p>
-        </div>
-      )}
-      {passpass === true && sum_b === sum_w && (
-        <div className={styles.result}>
-          <p>
-            {sum_b}対{sum_w}で引き分けです
-          </p>
-        </div>
-      )}
-      {passpass === true && sum_b < sum_w && (
-        <div className={styles.result}>
-          <p>
-            {sum_b}対{sum_w}で白の勝利です
-          </p>
-        </div>
-      )}
-      {passpass !== true && (
+      {canput(newBoard, 2 / turnColor, directions) === false &&
+        canput(newBoard, turnColor, directions) === false &&
+        sum_b > sum_w && (
+          <div className={styles.result}>
+            <p>
+              {sum_b}対{sum_w}で黒の勝利です
+            </p>
+          </div>
+        )}
+      {canput(newBoard, 2 / turnColor, directions) === false &&
+        canput(newBoard, turnColor, directions) === false &&
+        sum_b === sum_w && (
+          <div className={styles.result}>
+            <p>
+              {sum_b}対{sum_w}で引き分けです
+            </p>
+          </div>
+        )}
+      {canput(newBoard, 2 / turnColor, directions) === false &&
+        canput(newBoard, turnColor, directions) === false &&
+        sum_b < sum_w && (
+          <div className={styles.result}>
+            <p>
+              {sum_b}対{sum_w}で白の勝利です
+            </p>
+          </div>
+        )}
+      {(canput(newBoard, 2 / turnColor, directions) === true ||
+        canput(newBoard, turnColor, directions) === true) && (
         <div className={styles.scores}>
           <p>黒{sum_b}</p>
 
