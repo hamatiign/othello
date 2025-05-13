@@ -47,8 +47,13 @@
   border-radius: 100%;
 }
 
-.scores {
+/* .scores {
   display: flex;
+  font-size: xx-large;
+} */
+
+.informpass {
+  height: auto;
   font-size: xx-large;
 }
 
@@ -63,9 +68,13 @@
     height: 50%;
   }
 
-  .scores {
+  .informpass {
     font-size: 50px;
   }
+
+  /* .scores {
+    font-size: 50px;
+  } */
 
   .result {
     font-size: 50px;

@@ -90,6 +90,7 @@ export default function Home() {
   ];
 
   const newBoard = structuredClone(board);
+  const pre_update_turncolor = turnColor;
   //~~~~~~~~~クリックハンドラ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const clickHandler = (x: number, y: number) => {
     console.log(x, y);
@@ -133,16 +134,16 @@ export default function Home() {
         console.log(canput(newBoard, turnColor, directions));*/
       //console.log('passpass', passpass);
 
-      if (canpassAfterpass && pass) {
-        //パスパス強制終了
-        alert(`両者おける場所がなくなったため決着です.`);
-      } else if (pass) {
-        //片方パスの表示
-        if (turnColor === 1) alert('白のおける場所がないためもう一度黒の番です。');
-        else {
-          alert('黒のおける場所がないためもう一度白の番です。');
-        }
-      }
+      // if (canpassAfterpass && pass) {
+      //   //パスパス強制終了
+      //   alert(`両者おける場所がなくなったため決着です.`);
+      // } else if (pass) {
+      //   //片方パスの表示
+      //   if (turnColor === 1) alert('白のおける場所がないためもう一度黒の番です。');
+      //   else {
+      //     alert('黒のおける場所がないためもう一度白の番です。');
+      //   }
+      // }
 
       setTurnColor(2 / turnColor);
       if (pass === true && canpassAfterpass === false) setTurnColor(turnColor);
@@ -198,14 +199,14 @@ export default function Home() {
             </p>
           </div>
         )}
-      {(canput(newBoard, 2 / turnColor, directions) === true ||
-        canput(newBoard, turnColor, directions) === true) && (
-        <div className={styles.scores}>
-          <p>黒{sum_b}</p>
-
-          <p>白{sum_w}</p>
-        </div>
-      )}
+      {canput(newBoard, 2 / turnColor, directions) === false &&
+        pre_update_turncolor + turnColor === 2 && (
+          <div className={styles.informpass}>白のおける場所がないためもう一度黒の番です。</div>
+        )}
+      {canput(newBoard, 2 / turnColor, directions) === false &&
+        pre_update_turncolor + turnColor === 4 && (
+          <div className={styles.informpass}>黒のおける場所がないためもう一度白の番です。</div>
+        )}
     </div>
   );
 }
