@@ -90,8 +90,10 @@ export default function Home() {
   ];
 
   const newBoard = structuredClone(board);
-  const pre_update_turncolor = turnColor;
+
   //~~~~~~~~~クリックハンドラ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  const turnchange = () => setTurnColor(2 / turnColor);
+
   const clickHandler = (x: number, y: number) => {
     console.log(x, y);
 
@@ -111,46 +113,13 @@ export default function Home() {
       }
 
       newBoard[y][x] = turnColor;
-      // 色はあってるポイ
+
       //パス判定
-      const pass = !canput(newBoard, 2 / turnColor, directions);
-      /*console.log('canp 2/tc', canput(newBoard, 2 / turnColor, directions));
-
-      console.log('newboard', newBoard);
-      for (let i = 0; i < newBoard.length; i++) {
-        for (let j = 0; j < newBoard.length; j++) {
-          console.log(i, j, 'tcvec', colorcheckvec(j, i, 2 / turnColor, newBoard, directions));
-          console.log(newBoard[i][j]);
-        }
-      }
-      console.log('2/tc', 2 / turnColor);
-      console.log(canput(newBoard, turnColor, directions));
-      console.log('pass', pass);*/
-
-      //パス後のturncolor側のパスの判定
-      const canpassAfterpass = !canput(newBoard, turnColor, directions);
-
-      /*console.log('tc', turnColor);
-        console.log(canput(newBoard, turnColor, directions));*/
-      //console.log('passpass', passpass);
-
-      // if (canpassAfterpass && pass) {
-      //   //パスパス強制終了
-      //   alert(`両者おける場所がなくなったため決着です.`);
-      // } else if (pass) {
-      //   //片方パスの表示
-      //   if (turnColor === 1) alert('白のおける場所がないためもう一度黒の番です。');
-      //   else {
-      //     alert('黒のおける場所がないためもう一度白の番です。');
-      //   }
-      // }
-
       setTurnColor(2 / turnColor);
-      if (pass === true && canpassAfterpass === false) setTurnColor(turnColor);
-
       setBoard(newBoard);
     }
   }; //~~~~~~~~~~~~~~~~ハンドラ終わり~~~~~~~~~~~~~~~~~~~~~~
+
   const sum_b = calcScore_b(newBoard);
   const sum_w = calcScore_w(newBoard);
 
@@ -199,14 +168,11 @@ export default function Home() {
             </p>
           </div>
         )}
-      {canput(newBoard, 2 / turnColor, directions) === false &&
-        pre_update_turncolor + turnColor === 2 && (
-          <div className={styles.informpass}>白のおける場所がないためもう一度黒の番です。</div>
-        )}
-      {canput(newBoard, 2 / turnColor, directions) === false &&
-        pre_update_turncolor + turnColor === 4 && (
-          <div className={styles.informpass}>黒のおける場所がないためもう一度白の番です。</div>
-        )}
+      {canput(newBoard, turnColor, directions) === false && (
+        <div onClick={() => turnchange()}>
+          <button className={styles.passbutton}>パス</button>
+        </div>
+      )}
     </div>
   );
 }

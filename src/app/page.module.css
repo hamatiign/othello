@@ -9,6 +9,8 @@
 }
 
 .board {
+  position: relative;
+  top: -50px;
   display: flex;
   flex-wrap: wrap;
   width: 640px;
@@ -60,6 +62,11 @@
 .result {
   height: auto;
   font-size: xx-large;
+}
+
+.passbutton {
+  width: 100px;
+  height: 30px;
 }
 
 @media screen and (width <= 430px) {
