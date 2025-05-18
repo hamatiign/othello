@@ -168,11 +168,12 @@ export default function Home() {
             </p>
           </div>
         )}
-      {canput(newBoard, turnColor, directions) === false && (
-        <div onClick={() => turnchange()}>
-          <button className={styles.passbutton}>パス</button>
-        </div>
-      )}
+      {canput(newBoard, turnColor, directions) === false &&
+        canput(newBoard, 2 / turnColor, directions) === true && (
+          <div onClick={() => turnchange()}>
+            <button className={styles.passbutton}>パス</button>
+          </div>
+        )}
     </div>
   );
 }
